@@ -29,12 +29,12 @@
 %% Application API
 
 -export([refresh/0, cbreak/0, nocbreak/0, echo/0, noecho/0, addch/1, addstr/1,
-	 move/2, getyx/0, getmaxyx/0, curs_set/1, werase/1, erase/0, has_colors/0,
-	 start_color/0, init_pair/3, attron/1, attroff/1, nl/0, nonl/0,
-	 scrollok/2, mvaddch/3, mvaddstr/3, newwin/4, delwin/1, wmove/3,
-	 waddstr/2, waddch/2, mvwaddstr/4, mvwaddch/4, wrefresh/1, hline/2,
-	 whline/3, vline/2, wvline/3, border/8, wborder/9, box/3, getyx/1,
-	 getmaxyx/1, attron/2, attroff/2, keypad/2, getch/0]).
+     move/2, getyx/0, getmaxyx/0, curs_set/1, werase/1, erase/0, has_colors/0,
+     start_color/0, init_pair/3, init_color/4, attron/1, attroff/1, nl/0, nonl/0,
+     scrollok/2, mvaddch/3, mvaddstr/3, newwin/4, delwin/1, wmove/3,
+     waddstr/2, waddch/2, mvwaddstr/4, mvwaddch/4, wrefresh/1, hline/2,
+     whline/3, vline/2, wvline/3, border/8, wborder/9, box/3, getyx/1,
+     getmaxyx/1, attron/2, attroff/2, keypad/2, getch/0]).
 
 %% =============================================================================
 %% Application API
@@ -42,16 +42,16 @@
 refresh() ->
     call(?REFRESH).
 
-cbreak() -> 
+cbreak() ->
     call(?CBREAK).
 
-nocbreak() -> 
+nocbreak() ->
     call(?NOCBREAK).
 
-echo() -> 
+echo() ->
     call(?ECHO).
 
-noecho() -> 
+noecho() ->
     call(?NOECHO).
 
 addch(Char) when is_integer(Char) ->
@@ -91,8 +91,11 @@ has_colors() ->
 start_color() ->
     call(?START_COLOR).
 
+init_color(N, R, G, B) when is_integer(N) andalso is_integer(R) andalso is_integer(G) andalso is_integer(B) ->
+    call(?INIT_COLOR, {N, R, G, B}).
+
 init_pair(N, FColor, BColor) when is_integer(N) andalso is_integer(FColor)
-				  andalso is_integer(BColor) ->
+                  andalso is_integer(BColor) ->
     call(?INIT_PAIR, {N, FColor, BColor}).
 
 attron(Mask) ->
@@ -116,26 +119,26 @@ nonl() ->
 scrollok(Window, BFlag) when is_integer(Window) andalso is_boolean(BFlag) ->
     call(?SCROLLOK, {Window, BFlag}).
 
-mvaddch(Y, X, Char) when is_integer(Char) andalso is_integer(X) 
-			 andalso is_integer(Y) ->
+mvaddch(Y, X, Char) when is_integer(Char) andalso is_integer(X)
+             andalso is_integer(Y) ->
     call(?MVADDCH, {Y, X, Char}).
 
-mvaddstr(Y, X, String) when is_list(String) andalso is_integer(X) andalso 
-			    is_integer(Y) ->
+mvaddstr(Y, X, String) when is_list(String) andalso is_integer(X) andalso
+                is_integer(Y) ->
     Str = lists:flatten(String),
     call(?MVADDSTR, {Y, X, erlang:iolist_size(Str), Str}).
 
-newwin(Height, Width, StartY, StartX) when is_integer(Height) andalso 
-					   is_integer(Width) andalso 
-					   is_integer(StartY) andalso
-					   is_integer(StartX) ->
+newwin(Height, Width, StartY, StartX) when is_integer(Height) andalso
+                       is_integer(Width) andalso
+                       is_integer(StartY) andalso
+                       is_integer(StartX) ->
     call(?NEWWIN, {Height, Width, StartY, StartX}).
 
 delwin(Window) when is_integer(Window) ->
     call(?DELWIN, Window).
 
-wmove(Window, Y, X) when is_integer(Window) andalso is_integer(Y) andalso 
-			 is_integer(X) ->
+wmove(Window, Y, X) when is_integer(Window) andalso is_integer(Y) andalso
+             is_integer(X) ->
     call(?WMOVE, {Window, Y, X}).
 
 waddstr(Window, String) when is_integer(Window) andalso is_list(String) ->
@@ -146,8 +149,8 @@ waddch(Window, Char) when is_integer(Window) andalso is_integer(Char) ->
     call(?WADDCH, {Window, Char}).
 
 mvwaddstr(Window, Y, X, String) when is_integer(Window) andalso is_integer(Y)
-				     andalso is_integer(X) andalso 
-				     is_list(String) ->
+                     andalso is_integer(X) andalso
+                     is_list(String) ->
     Str = lists:flatten(String),
     call(?MVWADDSTR, {Window, Y, X, erlang:iolist_size(Str), Str}).
 
@@ -173,15 +176,15 @@ wvline(Window, Char, MaxN) when is_integer(Window) andalso is_integer(MaxN) ->
 border(Ls, Rs, Ts, Bs, TLs, TRs, BLs, BRs) ->
     wborder(0, Ls, Rs, Ts, Bs, TLs, TRs, BLs, BRs).
 
-wborder(Window, Ls, Rs, Ts, Bs, TLs, TRs, BLs, BRs) 
-  when is_integer(Ls) andalso is_integer(Rs) andalso 
-       is_integer(Ts) andalso is_integer(Bs) andalso 
-       is_integer(TLs) andalso is_integer(TRs) andalso 
+wborder(Window, Ls, Rs, Ts, Bs, TLs, TRs, BLs, BRs)
+  when is_integer(Ls) andalso is_integer(Rs) andalso
+       is_integer(Ts) andalso is_integer(Bs) andalso
+       is_integer(TLs) andalso is_integer(TRs) andalso
        is_integer(BLs) andalso is_integer(BRs) ->
     call(?WBORDER, {Window, Ls, Rs, Ts, Bs, TLs, TRs, BLs, BRs}).
 
 box(Window, Vert, Horz) when is_integer(Window) andalso is_integer(Vert) andalso
-			     is_integer(Horz) ->
+                 is_integer(Horz) ->
     call(?BOX, {Window, Vert, Horz}).
 
 keypad(Window, BFlag) when is_integer(Window) andalso is_boolean(BFlag) ->

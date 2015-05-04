@@ -94,6 +94,7 @@ void do_wvline(state *st);
 void do_wborder(state *st);
 void do_box(state *st);
 void do_keypad(state *st);
+void do_init_color(state *st);
 
 // =============================================================================
 // Erlang Callbacks
@@ -168,6 +169,7 @@ static ErlDrvSSizeT control(ErlDrvData drvstate, unsigned int command,
   case WBORDER: do_wborder(st); break;
   case BOX: do_box(st); break;
   case KEYPAD: do_keypad(st); break;
+  case INITCOLOR: do_init_color(st); break;
   default: break;
   }
 
@@ -290,6 +292,17 @@ void do_init_pair(state *st) {
   ei_decode_long(st->args, &(st->index), &bcolor);
   encode_ok_reply(st, init_pair((int)pairnum, (int)fcolor, (int)bcolor));
 }
+void do_init_color(state *st) {
+  int arity;
+  long pairnum, rcolor, gcolor, bcolor;
+  ei_decode_tuple_header(st->args, &(st->index), &arity);
+  ei_decode_long(st->args, &(st->index), &pairnum);
+  ei_decode_long(st->args, &(st->index), &rcolor);
+  ei_decode_long(st->args, &(st->index), &gcolor);
+  ei_decode_long(st->args, &(st->index), &bcolor);
+  encode_ok_reply(st, init_color((int)pairnum, (int)rcolor, (int)gcolor, (int)bcolor));
+}
+
 
 void do_wattron(state *st) {
   int arity;
