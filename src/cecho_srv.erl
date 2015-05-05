@@ -28,7 +28,7 @@
 	 code_change/3]).
 
 %% Module API
--export([start_link/0, call/2, getch/0]).
+-export([start_link/0, call/2, getch/1]).
 
 %% Records
 -record(state, { port, getch, observer }).
@@ -42,8 +42,8 @@ start_link() ->
 call(Cmd, Args) ->
     gen_server:call(?MODULE, {call, Cmd, Args}, infinity).
 
-getch() ->
-    gen_server:call(?MODULE, getch, infinity).
+getch(Timeout) ->
+    gen_server:call(?MODULE, getch, Timeout).
 
 %% =============================================================================
 %% Behaviour Callbacks
